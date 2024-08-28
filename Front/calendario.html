@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendário Interativo</title>
+    <link rel="stylesheet" href="calendario.css">
+</head>
+<body>
+    <div id="calendar-container">
+        <h1>Calendário</h1>
+        <div id="month-selection">
+            <button class="month-btn" data-month="0">Janeiro</button>
+            <button class="month-btn" data-month="1">Fevereiro</button>
+            <button class="month-btn" data-month="2">Março</button>
+            <button class="month-btn" data-month="3">Abril</button>
+            <button class="month-btn" data-month="4">Maio</button>
+            <button class="month-btn" data-month="5">Junho</button>
+            <button class="month-btn" data-month="6">Julho</button>
+            <button class="month-btn" data-month="7">Agosto</button>
+            <button class="month-btn" data-month="8">Setembro</button>
+            <button class="month-btn" data-month="9">Outubro</button>
+            <button class="month-btn" data-month="10">Novembro</button>
+            <button class="month-btn" data-month="11">Dezembro</button>
+        </div>
+        <div id="calendar" style="display:none;"></div>
+        <button id="back-to-months" style="display:none;">Voltar aos Meses</button>
+
+        <div id="event-form" style="display:none;">
+            <h2>Criar Evento</h2>
+            <form id="eventForm">
+                <label for="eventDate">Data:</label>
+                <input type="text" id="eventDate" name="eventDate" readonly>
+                <label for="eventTitle">Título:</label>
+                <input type="text" id="eventTitle" name="eventTitle" required>
+                <label for="eventDescription">Descrição:</label>
+                <textarea id="eventDescription" name="eventDescription" required></textarea>
+                <button type="submit">Salvar Evento</button>
+            </form>
+        </div>
+
+        <div id="event-list" style="display:none;">
+            <h2>Eventos Salvos</h2>
+            <ul id="events"></ul>
+        </div>
+    </div>
+
+    <script src="calendario.js"></script>
+</body>
+</html>
