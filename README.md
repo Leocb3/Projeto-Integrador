@@ -1,2 +1,2 @@
-# Projeto-Intregador
+# Projeto Integrador
 Gamificação de Calendário
