@@ -70,7 +70,7 @@
             document.getElementById(sectionId).classList.add('active');
         }
 
-        // Enviar dados de login pro backend usando o POST
+        // Enviar dados de login para o backend via POST
         document.getElementById('loginForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
@@ -78,25 +78,62 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            // Fazer requisição POST pro backend em Flask
-            fetch('http://127.0.0.1:5000/usuarios', {
+            // Fazer requisição POST para o backend Flask
+            fetch('http://127.0.0.1:5000/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    login: username,
+                    usuario: username,
                     senha: password
                 })
             })
             .then(response => response.json())
             .then(data => {
-                // Se o login der certo, redireciona para o calendário
+                // Se o login for bem-sucedido, redirecionar para o calendário
                 if (data.message) {
                     alert(data.message);
-                    window.location.href = 'calendario.html'; // Redireciona para o calendário
+                    window.location.href = 'calendario.html'; // Sucesso, redireciona para o calendário
                 } else {
                     alert('Erro no login. Verifique suas credenciais.');
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao se comunicar com o servidor.');
+            });
+        });
+
+        // Enviar dados de criação de conta para o backend via POST
+        document.getElementById('createAccountForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Obter valores do formulário
+            const newUsername = document.getElementById('newUsername').value;
+            const newEmail = document.getElementById('newEmail').value;
+            const newPassword = document.getElementById('newPassword').value;
+
+            // Fazer requisição POST para o backend Flask
+            fetch('http://127.0.0.1:5000/cadastrar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    usuario: newUsername,
+                    email: newEmail,
+                    senha: newPassword
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Se a criação da conta for bem-sucedida, mostrar uma mensagem
+                if (data.message) {
+                    alert(data.message);
+                    showSection('loginSection'); // Redirecionar para a página de login
+                } else {
+                    alert('Erro ao criar conta. Verifique os dados.');
                 }
             })
             .catch(error => {
@@ -107,3 +144,4 @@
     </script>
 </body>
 </html>
+
