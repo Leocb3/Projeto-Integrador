@@ -74,18 +74,21 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
 }
 
 #event-form h2 {
     margin-bottom: 15px;
+    text-align: center;
+    width: 100%;
 }
 
 #eventForm {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     width: 100%;
-    max-width: 400px; 
+    max-width: 400px;
 }
 
 #eventForm label {
@@ -95,12 +98,13 @@ body {
 }
 
 #eventForm input, #eventForm textarea {
-    width: 100%; 
+    width: 100%;
     padding: 8px;
     margin-bottom: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
     font-size: 14px;
+    box-sizing: border-box;
 }
 
 #eventForm button {
@@ -111,7 +115,8 @@ body {
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    margin-top: 10px; 
+    margin-top: 10px;
+    width: 100%;
 }
 
 #event-list {
