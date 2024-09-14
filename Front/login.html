@@ -70,9 +70,39 @@
             document.getElementById(sectionId).classList.add('active');
         }
 
+        // Enviar dados de login pro backend usando o POST
         document.getElementById('loginForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            window.location.href = 'calendario.html';
+
+            // Obter valores do formulário
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Fazer requisição POST pro backend em Flask
+            fetch('http://127.0.0.1:5000/usuarios', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    login: username,
+                    senha: password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Se o login der certo, redireciona para o calendário
+                if (data.message) {
+                    alert(data.message);
+                    window.location.href = 'calendario.html'; // Redireciona para o calendário
+                } else {
+                    alert('Erro no login. Verifique suas credenciais.');
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao se comunicar com o servidor.');
+            });
         });
     </script>
 </body>
