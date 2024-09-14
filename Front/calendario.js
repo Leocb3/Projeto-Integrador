@@ -39,26 +39,47 @@ document.addEventListener('DOMContentLoaded', function() {
         eventDateInput.closest('.day').classList.add('selected');
     }
 
+    // Enviar evento pro backend usando o Fetch
     eventForm.addEventListener('submit', function(e) {
         e.preventDefault();
+
         const newEvent = {
-            eventDate: eventDateInput.value,
-            eventTitle: document.getElementById('eventTitle').value,
-            eventDescription: document.getElementById('eventDescription').value,
+            data_evento: eventDateInput.value,
+            titulo: document.getElementById('eventTitle').value,
+            descricao: document.getElementById('eventDescription').value,
         };
 
-        // Adicionar evento à lista de eventos
-        events.push(newEvent);
-        displayEvents();
+        // Enviar o evento pro backend usando o AJAX com o Fetch
+        fetch('/inserir_evento', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newEvent),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Evento salvo com sucesso:', data);
+            displayEvents();
+        })
+        .catch((error) => {
+            console.error('Erro ao salvar o evento:', error);
+        });
 
-        // Resetar o formulário
+        // Resetar o formulário após salvar o evento
         eventForm.reset();
         eventFormContainer.style.display = 'none';
     });
 
+    // Função para exibir eventos salvos
     function displayEvents() {
         eventsUl.innerHTML = '';
-        eventList.style.display = 'block';
+
+        if (events.length === 0) {
+            eventList.style.display = 'none';
+        } else {
+            eventList.style.display = 'block';
+        }
 
         events.forEach((event, index) => {
             const li = document.createElement('li');
@@ -70,7 +91,6 @@ document.addEventListener('DOMContentLoaded', function() {
             eventsUl.appendChild(li);
         });
 
-        // Adicionar funcionalidade de remoção
         const removeButtons = document.querySelectorAll('.remove-event-btn');
         removeButtons.forEach(button => {
             button.addEventListener('click', function() {
@@ -95,7 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
     backToMonthsBtn.addEventListener('click', function() {
         calendar.style.display = 'none';
         eventFormContainer.style.display = 'none';
-        eventList.style.display = 'none';
         backToMonthsBtn.style.display = 'none';
         monthSelection.style.display = 'grid';
     });
