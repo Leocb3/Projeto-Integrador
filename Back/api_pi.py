@@ -20,7 +20,8 @@ def login_usuario():
     senha = data.get('senha')
     con = get_db_connection()
     cursor = con.cursor()
-    query = 'SELECT * FROM usuarios WHERE email = %s AND senha = %s'
+    query = 'SELECT *FROM usuarios WHERE email = %s AND senha = %s'
+    #SELECT id FROM usuarios WHERE email = %s AND senha = %s
     cursor.execute(query, (email, senha))
     #usuario_logado = data.get('id')
     usuario = cursor.fetchone()
