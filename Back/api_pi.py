@@ -22,6 +22,7 @@ def login_usuario():
     cursor = con.cursor()
     query = 'SELECT * FROM usuarios WHERE email = %s AND senha = %s'
     cursor.execute(query, (email, senha))
+    #usuario_logado = data.get('id')
     usuario = cursor.fetchone()
     con.close()
     if usuario:
@@ -81,6 +82,7 @@ def delete_usuario(id):
 def create_evento():
     data = request.get_json()
     usuario_id = data.get('usuario_id')
+    #usuario_id = usuario_logado
     titulo = data.get('titulo')
     descricao = data.get('descricao')
     data_evento = data.get('data_evento')
