@@ -5,6 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendário</title>
     <link rel="stylesheet" href="calendario.css">
+    <style>
+        h2 {
+            font-size: 2em;
+        }
+        #lista-btn {
+            padding: 5px 10px;
+            font-size: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #lista-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
     <h2>Calendário</h2>
@@ -24,7 +42,13 @@
         <button class="month-btn" data-month="Dezembro">Dezembro</button>
     </div>
 
+    <!-- Botão para acessar a página lista.html -->
+    <div style="margin-top: 20px;">
+        <button id="lista-btn">Ver Lista de Eventos</button>
+    </div>
+
     <script>
+        // Função para redirecionar para criar_evento.html
         document.querySelectorAll('.month-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const params = new URLSearchParams(window.location.search);
@@ -32,6 +56,13 @@
                 const mes = this.getAttribute('data-month');
                 window.location.href = `criar_evento.html?usuario_id=${usuarioId}&mes=${mes}`;
             });
+        });
+
+        // Função para redirecionar para lista.html
+        document.getElementById('lista-btn').addEventListener('click', function() {
+            const params = new URLSearchParams(window.location.search);
+            const usuarioId = params.get('usuario_id');
+            window.location.href = `lista.html?usuario_id=${usuarioId}`;
         });
     </script>
 </body>
