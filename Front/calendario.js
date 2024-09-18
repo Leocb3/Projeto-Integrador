@@ -1,190 +1,129 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const calendar = document.getElementById('calendar');
-    const eventForm = document.getElementById('eventForm');
-    const eventDateInput = document.getElementById('eventDate');
-    const eventFormContainer = document.getElementById('event-form');
-    const backToMonthsBtn = document.getElementById('back-to-months');
-    const monthSelection = document.getElementById('month-selection');
-    const monthButtons = document.querySelectorAll('.month-btn');
+    const urlParams = new URLSearchParams(window.location.search);
+    const usuarioId = urlParams.get('usuario_id');
+    const calendarContainer = document.getElementById('calendar-container');
+    const calendarElement = document.getElementById('calendar');
+    const eventForm = document.getElementById('event-form');
     const eventList = document.getElementById('event-list');
+    const backToMonthsButton = document.getElementById('back-to-months');
+    const monthButtons = document.querySelectorAll('.month-btn');
+    const eventFormEl = document.getElementById('eventForm');
+    const eventDateEl = document.getElementById('eventDate');
     const eventsUl = document.getElementById('events');
 
-    const currentYear = new Date().getFullYear();
-    let events = [];
-    let editEventId = null; // Variável para armazenar o ID do evento que está sendo editado
+    let currentMonth = new Date().getMonth();
+    let selectedDate = null;
 
-    // Função para carregar eventos do backend (GET)
-    async function fetchEventos() {
-        try {
-            const response = await fetch('http://127.0.0.1:5000/eventos');
-            const eventosData = await response.json();
-            events = eventosData;
-            displayEvents();
-        } catch (error) {
-            console.error('Erro ao buscar eventos:', error);
-        }
-    }
+    function loadCalendar(month) {
+        const now = new Date();
+        now.setMonth(month);
+        now.setDate(1);
 
-    // Função para adicionar evento ao backend (POST)
-    async function addEvento(evento) {
-        try {
-            const response = await fetch('http://127.0.0.1:5000/eventos', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(evento),
-            });
-            if (response.ok) {
-                fetchEventos(); // Atualiza os eventos após adicionar
-            }
-        } catch (error) {
-            console.error('Erro ao adicionar evento:', error);
-        }
-    }
+        const monthName = now.toLocaleString('pt-BR', { month: 'long' });
+        calendarElement.innerHTML = `<h2>${monthName} ${now.getFullYear()}</h2>`;
 
-    // Função para atualizar evento no backend (PUT)
-    async function updateEvento(evento) {
-        try {
-            const response = await fetch(`http://127.0.0.1:5000/eventos/${evento.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(evento),
-            });
-            if (response.ok) {
-                fetchEventos(); // Atualiza os eventos após a edição
-            }
-        } catch (error) {
-            console.error('Erro ao atualizar evento:', error);
-        }
-    }
+        const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
 
-    // Função para remover evento do backend (DELETE)
-    async function deleteEvento(eventId) {
-        try {
-            const response = await fetch(`http://127.0.0.1:5000/eventos/${eventId}`, {
-                method: 'DELETE',
-            });
-            if (response.ok) {
-                fetchEventos(); // Atualiza os eventos após remoção
-            }
-        } catch (error) {
-            console.error('Erro ao remover evento:', error);
-        }
-    }
-
-    // Carregar eventos ao inicializar
-    fetchEventos();
-
-    // Gerar calendário
-    function generateCalendar(year, month) {
-        calendar.innerHTML = '';
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const daysContainer = document.createElement('div');
+        daysContainer.classList.add('days-container');
 
         for (let i = 1; i <= daysInMonth; i++) {
-            const dayDiv = document.createElement('div');
-            dayDiv.className = 'day';
-            dayDiv.textContent = i;
-            dayDiv.addEventListener('click', function() {
-                selectDate(year, month, i);
-            });
-            calendar.appendChild(dayDiv);
+            const day = document.createElement('div');
+            day.classList.add('day');
+            day.textContent = i;
+            day.dataset.date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+            day.addEventListener('click', showEventForm);
+            daysContainer.appendChild(day);
         }
 
-        calendar.style.display = 'grid';
-        backToMonthsBtn.style.display = 'inline-block';
-        monthSelection.style.display = 'none';
+        calendarElement.appendChild(daysContainer);
+        calendarElement.style.display = 'block';
+        backToMonthsButton.style.display = 'inline-block';
     }
 
-    // Selecionar uma data e mostrar o formulário de eventos
-    function selectDate(year, month, day) {
-        const days = document.querySelectorAll('.day');
-        days.forEach(day => day.classList.remove('selected'));
-        eventDateInput.value = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        eventFormContainer.style.display = 'block';
-        eventDateInput.closest('.day').classList.add('selected');
+    function showEventForm(event) {
+        selectedDate = event.target.dataset.date;
+        eventDateEl.value = selectedDate;
+        eventForm.style.display = 'block';
+        loadEvents(selectedDate);
     }
 
-    // Submeter novo evento ou editar evento existente
-    eventForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const newEvent = {
-            usuario_id: 1, // Valor fixo como exemplo, você pode modificar conforme necessário
-            titulo: document.getElementById('eventTitle').value,
-            descricao: document.getElementById('eventDescription').value,
-            data_evento: eventDateInput.value
-        };
+    function hideEventForm() {
+        eventForm.style.display = 'none';
+    }
 
-        if (editEventId) {
-            newEvent.id = editEventId; // Adiciona o ID do evento que está sendo editado
-            updateEvento(newEvent); // Atualiza o evento no backend
-            editEventId = null; // Reseta a variável de edição após salvar
-        } else {
-            addEvento(newEvent); // Adiciona o evento no backend
-        }
+    function saveEvent(event) {
+        event.preventDefault();
+        
+        const title = eventFormEl.eventTitle.value;
+        const description = eventFormEl.eventDescription.value;
 
-        // Resetar o formulário
-        eventForm.reset();
-        eventFormContainer.style.display = 'none';
-    });
-
-    // Exibir eventos no front-end
-    function displayEvents() {
-        eventsUl.innerHTML = '';
-        eventList.style.display = 'block';
-
-        events.forEach((event, index) => {
-            const li = document.createElement('li');
-            li.className = 'event-item';
-            li.innerHTML = `
-                <span><strong>${event.data_evento}</strong> - ${event.titulo}: ${event.descricao}</span>
-                <button class="edit-event-btn" data-id="${event.id}">Editar</button>
-                <button class="remove-event-btn" data-id="${event.id}">Remover</button>
-            `;
-            eventsUl.appendChild(li);
+        fetch(`http://127.0.0.1:5000/eventos/criar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                usuario_id: usuarioId,
+                data: selectedDate,
+                titulo: title,
+                descricao: description
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert(data.message);
+                loadEvents(selectedDate);
+                hideEventForm();
+            } else {
+                alert('Erro ao salvar o evento.');
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao se comunicar com o servidor.');
         });
+    }
 
-        // Adicionar funcionalidade de remoção
-        const removeButtons = document.querySelectorAll('.remove-event-btn');
-        removeButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const eventId = this.getAttribute('data-id');
-                deleteEvento(eventId); // Remove evento do backend
+    function loadEvents(date) {
+        fetch(`http://127.0.0.1:5000/eventos/${usuarioId}?data=${date}`)
+        .then(response => response.json())
+        .then(data => {
+            eventsUl.innerHTML = '';
+            data.eventos.forEach(evento => {
+                const li = document.createElement('li');
+                li.textContent = `${evento.titulo}: ${evento.descricao}`;
+                eventsUl.appendChild(li);
             });
+            eventList.style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao carregar eventos.');
         });
+    }
 
-        // Adicionar funcionalidade de edição
-        const editButtons = document.querySelectorAll('.edit-event-btn');
-        editButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const eventId = this.getAttribute('data-id');
-                const eventToEdit = events.find(event => event.id == eventId);
-                if (eventToEdit) {
-                    // Preenche o formulário com os dados do evento a ser editado
-                    document.getElementById('eventTitle').value = eventToEdit.titulo;
-                    document.getElementById('eventDescription').value = eventToEdit.descricao;
-                    eventDateInput.value = eventToEdit.data_evento;
-                    eventFormContainer.style.display = 'block';
-                    editEventId = eventToEdit.id; // Armazena o ID do evento que está sendo editado
-                }
-            });
+    function showMonthView() {
+        calendarElement.style.display = 'none';
+        backToMonthsButton.style.display = 'none';
+        monthButtons.forEach(button => {
+            button.style.display = 'inline-block';
         });
     }
 
     monthButtons.forEach(button => {
         button.addEventListener('click', function() {
-            const month = parseInt(this.getAttribute('data-month'));
-            generateCalendar(currentYear, month);
+            const month = parseInt(button.dataset.month, 10);
+            currentMonth = month;
+            loadCalendar(month);
+            showMonthView();
         });
     });
 
-    backToMonthsBtn.addEventListener('click', function() {
-        calendar.style.display = 'none';
-        eventFormContainer.style.display = 'none';
-        eventList.style.display = 'none';
-        backToMonthsBtn.style.display = 'none';
-        monthSelection.style.display = 'grid';
+    backToMonthsButton.addEventListener('click', function() {
+        showMonthView();
     });
+
+    eventFormEl.addEventListener('submit', saveEvent);
 });
