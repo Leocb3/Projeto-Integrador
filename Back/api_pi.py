@@ -20,16 +20,17 @@ def login_usuario():
     senha = data.get('senha')
     con = get_db_connection()
     cursor = con.cursor()
-    query = 'SELECT *FROM usuarios WHERE email = %s AND senha = %s'
-    #SELECT id FROM usuarios WHERE email = %s AND senha = %s
+    query = 'SELECT id FROM usuarios WHERE email = %s AND senha = %s'
     cursor.execute(query, (email, senha))
-    #usuario_logado = data.get('id')
     usuario = cursor.fetchone()
     con.close()
     if usuario:
-        return jsonify({'message': 'Login bem-sucedido!'}), 200
+        return jsonify({'message': 'Login bem-sucedido!', 'usuario_id': usuario[0]}), 200
     else:
         return jsonify({'message': 'Credenciais inválidas.'}), 401
+
+    
+
 
 @app.route('/usuarios/criar', methods=['POST'])
 def create_usuario():
@@ -79,11 +80,10 @@ def delete_usuario(id):
     con.close()
     return jsonify({'message': f'Usuário com ID {id} removido com sucesso!'}), 200
 
-@app.route('/eventos', methods=['POST'])
+@app.route('/eventos/criar', methods=['POST'])
 def create_evento():
     data = request.get_json()
     usuario_id = data.get('usuario_id')
-    #usuario_id = usuario_logado
     titulo = data.get('titulo')
     descricao = data.get('descricao')
     data_evento = data.get('data_evento')
@@ -93,7 +93,7 @@ def create_evento():
     cursor.execute(query, (usuario_id, titulo, descricao, data_evento))
     con.commit()
     con.close()
-    return jsonify({'message': f'Evento {titulo} inserido com sucesso!'}), 201
+    return jsonify({'message': f'Evento criado com sucesso!'}), 201
 
 @app.route('/eventos', methods=['GET'])
 def read_eventos():
