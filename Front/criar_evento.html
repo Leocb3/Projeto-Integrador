@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Evento</title>
+    <link rel="stylesheet" href="criar_evento.css">
+</head>
+<body>
+    <h2>Criar Evento</h2>
+    <form id="eventoForm">
+        <div class="input-group">
+            <label for="eventoTitulo">Título do Evento</label>
+            <input type="text" id="eventoTitulo" name="titulo" required>
+        </div>
+        <div class="input-group">
+            <label for="eventoData">Data do Evento</label>
+            <input type="date" id="eventoData" name="data_evento" required>
+        </div>
+        <div class="input-group">
+            <label for="eventoDescricao">Descrição</label>
+            <textarea id="eventoDescricao" name="descricao" required></textarea>
+        </div>
+        <button type="submit">Salvar Evento</button>
+    </form>
+    <div id="eventoMessage" class="message"></div>
+
+    <script>
+        // Função para mapear o nome do mês para o número do mês
+        function getMonthNumber(monthName) {
+            const months = {
+                'Janeiro': 1,
+                'Fevereiro': 2,
+                'Março': 3,
+                'Abril': 4,
+                'Maio': 5,
+                'Junho': 6,
+                'Julho': 7,
+                'Agosto': 8,
+                'Setembro': 9,
+                'Outubro': 10,
+                'Novembro': 11,
+                'Dezembro': 12
+            };
+            return months[monthName];
+        }
+
+        function setInitialDate() {
+            const params = new URLSearchParams(window.location.search);
+            const mes = params.get('mes');
+            const usuario_id = params.get('usuario_id');
+
+            const currentYear = new Date().getFullYear();
+            const today = new Date();
+            const monthNumber = getMonthNumber(mes);
+            let year = currentYear;
+
+            // Calcula a data do próximo ano se o mês e o dia selecionados forem anteriores à data atual
+            if (monthNumber < today.getMonth() + 1 || 
+                (monthNumber === today.getMonth() + 1 && today.getDate() > 31)) {
+                year++;
+            }
+
+            // Define a data mínima para o input de data
+            const minDate = `${year}-${String(monthNumber).padStart(2, '0')}-01`;
+            document.getElementById('eventoData').setAttribute('min', minDate);
+
+            // Ajusta a data atual no campo de data
+            document.getElementById('eventoData').setAttribute('value', minDate);
+        }
+
+        document.getElementById('eventoForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const titulo = document.getElementById('eventoTitulo').value;
+            const data_evento = document.getElementById('eventoData').value;
+            const descricao = document.getElementById('eventoDescricao').value;
+
+            // Verifica se a data_evento é válida e não está no passado
+            const inputDate = new Date(data_evento);
+            const today = new Date();
+            
+            // Ajusta o ano para a comparação de forma adequada
+            if (inputDate < today) {
+                document.getElementById('eventoMessage').textContent = 'A data do evento não pode ser uma data passada.';
+                return;
+            }
+
+            const params = new URLSearchParams(window.location.search);
+            const usuario_id = params.get('usuario_id');
+
+            fetch('http://127.0.0.1:5000/eventos/criar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    usuario_id: usuario_id,
+                    titulo: titulo,
+                    data_evento: data_evento,
+                    descricao: descricao
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === 'Evento criado com sucesso!') {
+                    document.getElementById('eventoMessage').textContent = 'Evento salvo com sucesso!';
+                } else {
+                    document.getElementById('eventoMessage').textContent = 'Erro ao salvar o evento.';
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                document.getElementById('eventoMessage').textContent = 'Erro ao se comunicar com o servidor.';
+            });
+        });
+
+        // Inicializa a data e o formulário
+        setInitialDate();
+    </script>
+</body>
+</html>
