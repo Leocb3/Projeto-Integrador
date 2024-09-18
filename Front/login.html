@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login, Criar Conta e Recuperar Senha</title>
+    <title>Login e Criar Conta</title>
     <link rel="stylesheet" href="login.css">
     <style>
         .container { display: none; }
         .container.active { display: block; }
+        .message { color: red; }
     </style>
 </head>
 <body>
@@ -16,29 +17,29 @@
         <h2>Login</h2>
         <form id="loginForm">
             <div class="input-group">
-                <label for="username">Usuário</label>
-                <input type="text" id="username" name="username" required>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
             </div>
             <div class="input-group">
                 <label for="password">Senha</label>
                 <input type="password" id="password" name="password" required>
             </div>
             <button type="submit">Entrar</button>
-            <a href="#" onclick="showSection('forgotPasswordSection')">Esqueceu Sua Senha?</a>
             <a href="#" onclick="showSection('createAccountSection')">Criar Nova Conta</a>
         </form>
+        <div id="loginMessage" class="message"></div>
     </div>
 
     <div id="createAccountSection" class="container">
         <h2>Criar Conta</h2>
         <form id="createAccountForm">
             <div class="input-group">
-                <label for="newUsername">Usuário</label>
-                <input type="text" id="newUsername" name="newUsername" required>
-            </div>
-            <div class="input-group">
                 <label for="newEmail">Email</label>
                 <input type="email" id="newEmail" name="newEmail" required>
+            </div>
+            <div class="input-group">
+                <label for="newUsername">Usuário</label>
+                <input type="text" id="newUsername" name="newUsername" required>
             </div>
             <div class="input-group">
                 <label for="newPassword">Senha</label>
@@ -47,18 +48,7 @@
             <button type="submit">Criar Conta</button>
             <a href="#" onclick="showSection('loginSection')">Voltar ao Login</a>
         </form>
-    </div>
-
-    <div id="forgotPasswordSection" class="container">
-        <h2>Recuperar Senha</h2>
-        <form id="forgotPasswordForm">
-            <div class="input-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <button type="submit">Enviar</button>
-            <a href="#" onclick="showSection('loginSection')">Voltar ao Login</a>
-        </form>
+        <div id="createAccountMessage" class="message"></div>
     </div>
 
     <script>
@@ -75,33 +65,33 @@
             event.preventDefault();
 
             // Obter valores do formulário
-            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
             // Fazer requisição POST para o backend Flask
-            fetch('http://127.0.0.1:5000/login', {
+            fetch('http://127.0.0.1:5000/usuarios/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    usuario: username,
+                    email: email,
                     senha: password
                 })
             })
             .then(response => response.json())
             .then(data => {
-                // Se o login for bem-sucedido, redirecionar para o calendário
-                if (data.message) {
-                    alert(data.message);
-                    window.location.href = 'calendario.html'; // Sucesso, redireciona para o calendário
+                if (data.message === 'Login bem-sucedido!') {
+                    // Redirecionar para o calendário.html com o usuario_id
+                    window.location.href = `calendario.html?usuario_id=${data.usuario_id}`;
                 } else {
-                    alert('Erro no login. Verifique suas credenciais.');
+                    // Exibir mensagem de erro
+                    document.getElementById('loginMessage').textContent = 'Erro no login. Verifique suas credenciais.';
                 }
             })
             .catch(error => {
                 console.error('Erro:', error);
-                alert('Erro ao se comunicar com o servidor.');
+                document.getElementById('loginMessage').textContent = 'Erro ao se comunicar com o servidor.';
             });
         });
 
@@ -110,38 +100,36 @@
             event.preventDefault();
 
             // Obter valores do formulário
-            const newUsername = document.getElementById('newUsername').value;
             const newEmail = document.getElementById('newEmail').value;
+            const newUsername = document.getElementById('newUsername').value;
             const newPassword = document.getElementById('newPassword').value;
 
             // Fazer requisição POST para o backend Flask
-            fetch('http://127.0.0.1:5000/criar', {
+            fetch('http://127.0.0.1:5000/usuarios/criar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    usuario: newUsername,
                     email: newEmail,
+                    usuario: newUsername,
                     senha: newPassword
                 })
             })
             .then(response => response.json())
             .then(data => {
-                // Se a criação da conta for bem-sucedida, mostrar uma mensagem
                 if (data.message) {
                     alert(data.message);
                     showSection('loginSection'); // Redirecionar para a página de login
                 } else {
-                    alert('Erro ao criar conta. Verifique os dados.');
+                    document.getElementById('createAccountMessage').textContent = 'Erro ao criar conta. Verifique os dados.';
                 }
             })
             .catch(error => {
                 console.error('Erro:', error);
-                alert('Erro ao se comunicar com o servidor.');
+                document.getElementById('createAccountMessage').textContent = 'Erro ao se comunicar com o servidor.';
             });
         });
     </script>
 </body>
 </html>
-
