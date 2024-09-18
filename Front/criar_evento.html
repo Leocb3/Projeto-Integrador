@@ -5,6 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Criar Evento</title>
     <link rel="stylesheet" href="criar_evento.css">
+    <style>
+        /* Adiciona estilo específico para o botão de voltar */
+        .btn-voltar {
+            margin-top: 20px;
+            padding: 5px 10px;
+            background-color: #ff4d4d; /* Cor de fundo vermelha */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            width: 12.5%; /* Define a largura como um quarto da largura do botão de salvar */
+            box-sizing: border-box; /* Inclui padding e border na largura total */
+        }
+        .btn-voltar:hover {
+            background-color: #cc0000; /* Cor de fundo vermelha escura */
+        }
+    </style>
 </head>
 <body>
     <h2>Criar Evento</h2>
@@ -24,6 +43,9 @@
         <button type="submit">Salvar Evento</button>
     </form>
     <div id="eventoMessage" class="message"></div>
+
+    <!-- Botão para retornar ao calendário -->
+    <button class="btn-voltar" onclick="window.location.href='calendario.html'">Voltar para o Calendário</button>
 
     <script>
         // Função para mapear o nome do mês para o número do mês
