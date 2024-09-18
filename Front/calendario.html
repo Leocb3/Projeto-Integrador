@@ -1,51 +1,38 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendário Interativo</title>
+    <title>Calendário</title>
     <link rel="stylesheet" href="calendario.css">
 </head>
 <body>
-    <div id="calendar-container">
-        <h1>Calendário</h1>
-        <div id="month-selection">
-            <button class="month-btn" data-month="0">Janeiro</button>
-            <button class="month-btn" data-month="1">Fevereiro</button>
-            <button class="month-btn" data-month="2">Março</button>
-            <button class="month-btn" data-month="3">Abril</button>
-            <button class="month-btn" data-month="4">Maio</button>
-            <button class="month-btn" data-month="5">Junho</button>
-            <button class="month-btn" data-month="6">Julho</button>
-            <button class="month-btn" data-month="7">Agosto</button>
-            <button class="month-btn" data-month="8">Setembro</button>
-            <button class="month-btn" data-month="9">Outubro</button>
-            <button class="month-btn" data-month="10">Novembro</button>
-            <button class="month-btn" data-month="11">Dezembro</button>
-        </div>
-        <div id="calendar" style="display:none;"></div>
-        <button id="back-to-months" style="display:none;">Voltar aos Meses</button>
-
-        <div id="event-form" style="display: none;">
-            <h2>Criar Evento</h2>
-            <form id="eventForm">
-                <label for="eventDate">Data:</label>
-                <input type="text" id="eventDate" name="eventDate" readonly>
-                <label for="eventTitle">Título:</label>
-                <input type="text" id="eventTitle" name="eventTitle" required>
-                <label for="eventDescription">Descrição:</label>
-                <textarea id="eventDescription" name="eventDescription" required></textarea>
-                <button type="submit">Salvar Evento</button>
-            </form>
-        </div>
-    
-
-        <div id="event-list" style="display:none;">
-            <h2>Eventos Salvos</h2>
-            <ul id="events"></ul>
-        </div>
+    <h2>Calendário</h2>
+    <div id="calendar">
+        <!-- Botões para cada mês -->
+        <button class="month-btn" data-month="Janeiro">Janeiro</button>
+        <button class="month-btn" data-month="Fevereiro">Fevereiro</button>
+        <button class="month-btn" data-month="Março">Março</button>
+        <button class="month-btn" data-month="Abril">Abril</button>
+        <button class="month-btn" data-month="Maio">Maio</button>
+        <button class="month-btn" data-month="Junho">Junho</button>
+        <button class="month-btn" data-month="Julho">Julho</button>
+        <button class="month-btn" data-month="Agosto">Agosto</button>
+        <button class="month-btn" data-month="Setembro">Setembro</button>
+        <button class="month-btn" data-month="Outubro">Outubro</button>
+        <button class="month-btn" data-month="Novembro">Novembro</button>
+        <button class="month-btn" data-month="Dezembro">Dezembro</button>
     </div>
 
-    <script src="calendario.js"></script>
+    <script>
+        document.querySelectorAll('.month-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const params = new URLSearchParams(window.location.search);
+                const usuarioId = params.get('usuario_id');
+                const mes = this.getAttribute('data-month');
+                window.location.href = `criar_evento.html?usuario_id=${usuarioId}&mes=${mes}`;
+            });
+        });
+    </script>
 </body>
 </html>
