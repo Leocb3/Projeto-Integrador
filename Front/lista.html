@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Eventos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #fff;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .titulo {
+            font-weight: bold;
+        }
+        .descricao {
+            font-style: italic;
+        }
+        .data-evento {
+            color: #555;
+        }
+        .btn-calendario {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn-calendario:hover {
+            background-color: #0056b3;
+        }
+        .btn-remover {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        .btn-remover:hover {
+            background-color: #cc0000;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Lista de Eventos</h1>
+    <ul id="event-list">
+        <!-- A lista de eventos será carregada aqui -->
+    </ul>
+
+    <a href="calendario.html" class="btn-calendario">Ir para o Calendário</a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('http://127.0.0.1:5000/eventos') // URL do endpoint Flask
+                .then(response => response.json())
+                .then(data => {
+                    const eventList = document.getElementById('event-list');
+                    data.forEach(evento => {
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `
+                            <p class="titulo">Título: ${evento[2]}</p>
+                            <p class="descricao">Descrição: ${evento[3]}</p>
+                            <p class="data-evento">Data: ${evento[4]}</p>
+                            <button class="btn-remover" data-id="${evento[0]}">Remover Evento</button>
+                        `;
+                        eventList.appendChild(listItem);
+
+                        // Adicionar evento ao botão "Remover Evento"
+                        listItem.querySelector('.btn-remover').addEventListener('click', function() {
+                            const eventoId = this.getAttribute('data-id');
+                            removerEvento(eventoId, listItem);
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar eventos:', error);
+                });
+        });
+
+        // Função para remover evento
+        function removerEvento(id, listItem) {
+            fetch(`http://127.0.0.1:5000/eventos/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    listItem.remove(); // Remover o item da lista
+                    alert('Evento removido com sucesso!');
+                } else {
+                    alert('Erro ao remover evento.');
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao remover evento:', error);
+            });
+        }
+    </script>
+
+</body>
+</html>
