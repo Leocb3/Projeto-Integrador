@@ -76,7 +76,7 @@
         <!-- A lista de eventos será carregada aqui -->
     </ul>
 
-    <a href="calendario.html" class="btn-calendario">Ir para o Calendário</a>
+    <button class="btn-calendario" onclick="window.history.back()">Voltar para o Calendário</button>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -123,6 +123,7 @@
                 console.error('Erro ao remover evento:', error);
             });
         }
+    
     </script>
 
 </body>
