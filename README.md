@@ -1,2 +1,2 @@
 # Projeto Integrador
-Gamificação de Calendário
+Gamificação de Agenda
