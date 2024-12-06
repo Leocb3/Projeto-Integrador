@@ -1,0 +1,22 @@
+<AgendaScreen>:
+    name: "agenda"
+    FloatLayout:
+        canvas.before:
+            # Imagem de fundo
+            Rectangle:
+                source: "imagens/fundo_colina.png"  # Caminho da imagem
+                pos: self.pos
+                size: self.size
+
+        Label:
+            text: "Agenda" 
+            font_size: 32
+            pos_hint: {"center_x": 0.5, "top": 0.95}
+            size_hint: None, None
+
+        Button:
+            text: "Voltar"
+            size_hint: None, None
+            size: 120, 50
+            pos_hint: {"center_x": 0.5, "y": 0.1}
+            on_release: app.root.current = "dashboard"

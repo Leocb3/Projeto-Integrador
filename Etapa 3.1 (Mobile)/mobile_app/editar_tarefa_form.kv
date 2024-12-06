@@ -1,0 +1,54 @@
+<EditarTarefaFormScreen>:
+    name: "editar_tarefa_form"
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 10
+        padding: 20
+
+        Label:
+            text: "Editar Tarefa"
+            font_size: 24
+            size_hint_y: None
+            height: 50
+
+        TextInput:
+            id: titulo_input
+            hint_text: "Título da Tarefa"
+            multiline: False
+            size_hint_y: None
+            height: 40
+
+        TextInput:
+            id: data_input
+            hint_text: "Data (dd/mm/aaaa)"
+            multiline: False
+            size_hint_y: None
+            height: 40
+
+        TextInput:
+            id: hora_input
+            hint_text: "Hora (hh:mm)"
+            multiline: False
+            size_hint_y: None
+            height: 40
+
+        TextInput:
+            id: descricao_input
+            hint_text: "Descrição"
+            multiline: True
+            size_hint_y: None
+            height: 100
+
+        Button:
+            text: "Salvar Alterações"
+            size_hint_y: None
+            height: 50
+            on_release:
+                root.salvar_edicao(
+                titulo_input.text, data_input.text, hora_input.text, descricao_input.text)
+
+        Button:
+            text: "Cancelar"
+            size_hint_y: None
+            height: 50
+            on_release: app.root.current = "agenda"

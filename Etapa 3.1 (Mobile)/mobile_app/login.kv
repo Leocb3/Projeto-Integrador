@@ -1,0 +1,33 @@
+<LoginScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 20
+        spacing: 10
+
+        Label:
+            text: "Login"
+            font_size: 24
+
+        TextInput:
+            id: email
+            hint_text: "Email"
+            multiline: False
+
+        TextInput:
+            id: senha
+            hint_text: "Senha"
+            password: True
+            multiline: False
+
+        Label:
+            id: login_error
+            text: ""
+            color: 1, 0, 0, 1
+
+        Button:
+            text: "Entrar"
+            on_press: root.login()
+
+        Button:
+            text: "Registrar"
+            on_press: app.root.current = "register"
