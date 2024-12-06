@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login e Criar Conta</title>
+    <link rel="stylesheet" href="login.css">
+    <style>
+        @font-face {
+            font-family: 'Public Pixel';
+            src: url('fonts/PublicPixel.ttf') format('truetype');
+        }
+
+        body {
+            font-family: 'Public Pixel', Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+            display: none;
+        }
+
+        .container.active {
+            display: block;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 28px; /* Ajustado */
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px; /* Ajustado */
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px; /* Ajustado */
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px; /* Ajustado */
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            display: block;
+            margin-top: 10px;
+            color: #007bff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            color: red;
+            margin-top: 10px;
+        }
+
+        #pygameMessage {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loginSection" class="container active">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Entrar</button>
+            <a href="#" onclick="showSection('createAccountSection')">Criar Nova Conta</a>
+        </form>
+        <div id="loginMessage" class="message"></div>
+        <div id="pygameMessage" class="message"></div>
+    </div>
+
+    <div id="createAccountSection" class="container">
+        <h2>Criar Conta</h2>
+        <form id="createAccountForm">
+            <div class="input-group">
+                <label for="newEmail">Email</label>
+                <input type="email" id="newEmail" name="email" required>
+            </div>
+            <div class="input-group">
+                <label for="newUsername">Usuário</label>
+                <input type="text" id="newUsername" name="usuario" required>
+            </div>
+            <div class="input-group">
+                <label for="newPassword">Senha</label>
+                <input type="password" id="newPassword" name="senha" required>
+            </div>
+            <button type="submit">Criar Conta</button>
+            <a href="#" onclick="showSection('loginSection')">Voltar ao Login</a>
+        </form>
+        <div id="createAccountMessage" class="message"></div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.container');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        // Função de login
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            fetch('http://127.0.0.1:5000/usuarios/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    senha: password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === 'Login bem-sucedido! Pygame iniciado.') {
+                    document.getElementById('pygameMessage').textContent = 'Pygame foi iniciado no servidor!';
+                } else {
+                    document.getElementById('loginMessage').textContent = 'Erro no login. Verifique suas credenciais.';
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                document.getElementById('loginMessage').textContent = 'Erro ao se comunicar com o servidor.';
+            });
+        });
+
+        // Função de criação de conta
+        document.getElementById('createAccountForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const newEmail = document.getElementById('newEmail').value;
+            const newUsername = document.getElementById('newUsername').value;
+            const newPassword = document.getElementById('newPassword').value;
+
+            fetch('http://127.0.0.1:5000/usuarios/criar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: newEmail,
+                    usuario: newUsername,
+                    senha: newPassword
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                    showSection('loginSection');
+                } else {
+                    document.getElementById('createAccountMessage').textContent = 'Erro ao criar conta. Verifique os dados.';
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                document.getElementById('createAccountMessage').textContent = 'Erro ao se comunicar com o servidor.';
+            });
+        });
+    </script>
+</body>
+</html>
