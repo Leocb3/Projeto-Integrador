@@ -1,2 +1,2 @@
 # Projeto Integrador I
-Gamificação de Agenda
+Gamificação de Agenda (feat. Ericoreto)
